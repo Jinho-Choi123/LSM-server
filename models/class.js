@@ -17,15 +17,21 @@ const noticeSchema = new mongoose.Schema({
 const lectureSchema = new mongoose.Schema({
     lectureVideo: { type: Array },
     lectureNote: { type: Array },
+    lectureId: { type: String, unique: true }
 })
 
-
 const classSchema = new mongoose.Schema({
-    classId: { type: String, required: true },
+    classId: { type: String, required: true, unique: true },
     teacherId: { type: Array, required: true },
-    studentId: { type: Array, required: true },
-    lectureId: [lectureSchema],
-    noticeId: [noticeSchema]
+    studentId: { type: Array },
+    lecture: [lectureSchema],
+    notice: [noticeSchema]
+})
+
+classSchema.method({
+    addlecture: () => {
+        this.lecture
+    }
 })
 
 module.exports = mongoose.model('Class', classSchema);

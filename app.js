@@ -8,16 +8,21 @@ const dotenv = require('dotenv');
 dotenv.config({ path: '/home/ubuntu/LSM-server/.env' });
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth')
+const teacherRouter = require('./routes/teacher')
 
 const app = express();
 
 const PORT = 8080;
+const cors = require('cors');
 
 //connect to mongodb
 const db = require('./db/db');
 db();
+
+//allow frontend CORS policy
+app.use(cors({origin: "http://localhost:3000"}));
+app.use(cors({origin: "http://192.249.18.243:3000"}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,9 +34,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/teacher', teacherRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

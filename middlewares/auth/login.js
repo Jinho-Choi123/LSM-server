@@ -13,6 +13,7 @@ const verify = (password, hash) => {
 }
 
 const loginMiddleware = (req, res, next) => {
+    console.log("got auth login request");
     const userid = req.body.userId;
     const isteacher = req.body.isTeacher;
     const userpassword = req.body.userPassword;
