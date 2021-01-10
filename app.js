@@ -9,6 +9,7 @@ dotenv.config({ path: '/home/ubuntu/LSM-server/.env' });
 
 const authRouter = require('./routes/auth');
 const groupRouter = require('./routes/group');
+const geoRouter = require('./routes/geo');
 
 const app = express();
 const server = require('http').createServer(app);
@@ -25,8 +26,7 @@ db();
 
 
 //allow frontend CORS policy
-app.use(cors({ origin: "http://localhost:3000" }));
-app.use(cors({ origin: "http://192.249.18.243:3000" }));
+app.use(cors());
 
 //Socket IO Connection with Client
 const Chat = require('./models/Chat');
@@ -76,7 +76,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', authRouter);
 app.use('/group', groupRouter);
-
+app.use('/geo', geoRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404));

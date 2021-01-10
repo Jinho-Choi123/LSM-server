@@ -1,50 +1,69 @@
 var express = require('express');
 var router = express.Router();
 const Group = require('../../models/Group');
+const axios = require('axios');
 
 const searchGroupMiddleware = (req, res, next) => {
     /*
     req: {
-        endPoint: " ",
-        time: " ",
-
+        endpointaddress: " ",
+        matchdate: " ",
     }
     */
-    const time = new Date(req.body.time);
-    console.log(time);
-    const endpoint = req.body.endPoint;
+    const request = req.body;
+    console.log(request);
+    const morning = new Date(request.matchdate);
+    console.log("morning is " + morning);
 
-    var add_minutes = function(dt, minutes) {
-        return new Date(dt.getTime() + minutes * 60000);
-    }
 
-    const time1 = add_minutes(time, 30);
-    const time2 = add_minutes(time, -30);
-    console.log(time1);
-    console.log(time2);
+    const midnight = new Date(request.matchdate);
+    midnight.setSeconds(59);
+    midnight.setHours(23);
+    midnight.setMinutes(59);
+    const endpointAddr = req.body.endpointaddress;
+    console.log("endpoint addr is " + endpointAddr);
 
-    Group.find({
-        time: { $gte: time2, $lt: time1 },
-        endPoint: {
-            $near: {
-                $maxDistance: 500,
-                $geometry: endpoint
+    axios.post('http://localhost:8080/geo/search', {
+            address: endpointAddr
+        })
+        .then((response) => {
+            console.log("get response from geo search");
+            if (response.status === "OK") {
+                const endpoint = response.location;
+
+                Group.find({
+                    date: { $gt: morning, $lt: midnight },
+                    endPoint: {
+                        $near: {
+                            $maxDistance: 500,
+                            $geometry: endpoint
+                        }
+                    },
+                    members: {
+                        $size: {
+                            $lt: 4
+                        }
+                    }
+
+
+                }, (err, data) => {
+                    console.log(data);
+                    if (err) throw err;
+                    else {
+                        res.json(data);
+                    }
+                })
+
+            } else {
+                res.status(201).json({});
             }
-        },
-        members: {
-            $size: {
-                $lt: 4
-            }
-        }
+        })
+        .catch((err) => {
+            console.log(err);
+            throw err;
+        })
 
 
-    }, (err, data) => {
-        console.log(data);
-        if (err) throw err;
-        else {
-            res.json(data);
-        }
-    })
 
 }
 

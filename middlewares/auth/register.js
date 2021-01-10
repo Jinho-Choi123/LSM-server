@@ -5,6 +5,14 @@ const crypto = require('crypto');
 const dotenv = require('dotenv');
 
 const registerMiddleware = (req, res, next) => {
+    /**
+    req: {
+        userId: " ",
+        userPassword: " ",
+        isTeacher: " ",
+    }
+     */
+    console.log("in register middleware");
     const userid = req.body.userId;
     const userpassword = req.body.userPassword;
     const isteacher = req.body.isTeacher;
@@ -15,7 +23,7 @@ const registerMiddleware = (req, res, next) => {
             res.send({ msg: err });
         } else {
             if (data != null) {
-                res.send({ msg: "user ID already exists" });
+                res.send({ msg: "user ID already exists", success: false });
                 return;
             } else {
                 crypto.pbkdf2(userpassword, (process.env.PASSWORD_HASH_SALT).toString('base64'), 90194, 64, 'sha512', (err, key) => {
@@ -30,7 +38,7 @@ const registerMiddleware = (req, res, next) => {
                     }
                 })
 
-                res.send({ msg: "success" });
+                res.send({ msg: "success", success: true });
                 return;
             }
         }

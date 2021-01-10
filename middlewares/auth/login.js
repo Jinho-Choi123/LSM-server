@@ -13,21 +13,25 @@ const verify = (password, hash) => {
 }
 
 const loginMiddleware = (req, res, next) => {
+    /**
+    req: {
+        userId: " ",
+        userPassword: " "
+    }
+     */
     console.log("got auth login request");
     const userid = req.body.userId;
     const userpassword = req.body.userPassword;
-    console.log(userid);
-    console.log(userpassword);
+    console.log(req);
 
     const check = (data) => {
         if (data == null) {
             res.send({ msg: "No such ID or PASSWORD", success: false });
-            return;
         } else {
             if (verify(userpassword.toString('base64'), data.userPassword.toString('base64'))) {
                 console.log("gooooooooooooood");
                 //login success. 
-                const p = new Promise((resolve, reject) => {
+                return new Promise((resolve, reject) => {
                     jwt.sign({
                             userId: userid,
                             isTeacher: data.isteacher
@@ -38,14 +42,12 @@ const loginMiddleware = (req, res, next) => {
                             subject: 'userInfo'
                         }, (err, token) => {
                             if (err) reject(err)
-                            resolve(token)
+                            else resolve(token)
                         }
                     )
                 })
 
-                return p;
             } else {
-                console.log("hellllllllllllllllo");
                 res.status(201).json({
                     msg: "login failed",
                     success: false
@@ -56,7 +58,7 @@ const loginMiddleware = (req, res, next) => {
 
 
     const respond = (token) => {
-        res.json({
+        return res.json({
             msg: 'logged in successfully',
             success: true,
             jwt: token
@@ -64,10 +66,9 @@ const loginMiddleware = (req, res, next) => {
     }
 
     const onError = (err) => {
-        res.status(403).json({
+        return res.status(405).json({
             msg: err.message,
             success: false
-
         })
     }
 

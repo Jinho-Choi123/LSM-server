@@ -8,7 +8,7 @@ const searchGroupMiddleware = require('../middlewares/group/searchGroup');
 
 router.post('/create', createGroupMiddleware);
 router.post('/delete', deleteGroupMiddleware);
-router.get('/search', searchGroupMiddleware);
+router.post('/search', searchGroupMiddleware);
 router.post('/join', joinGroupMiddleware);
 
 module.exports = router;

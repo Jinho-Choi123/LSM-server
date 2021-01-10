@@ -7,12 +7,6 @@ const authcheckMiddleware = require('../middlewares/auth/authCheck');
 router.post('/register', registerMiddleware);
 router.post('/login', loginMiddleware);
 
-router.use('/authcheck', authcheckMiddleware);
-router.get('/authcheck', (req, res) => {
-    res.json({
-        success: true,
-        token: req.decoded
-    })
-})
+router.get('/authcheck', authcheckMiddleware);
 
 module.exports = router;

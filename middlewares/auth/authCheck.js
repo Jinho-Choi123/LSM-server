@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const User = require('../../models/User');
 
 const authcheckMiddleware = (req, res, next) => {
-    const token = req.headers['x-access-token'] || req.query.token;
+    const token = req.body.token;
 
     if (!token) {
         return res.status(403).json({
@@ -31,8 +31,10 @@ const authcheckMiddleware = (req, res, next) => {
                     msg: 'no such user'
                 })
                 else {
-                    req.decoded = token;
-                    next();
+                    res.json({
+                        success: true,
+                        token: token
+                    })
                 }
             }
         })

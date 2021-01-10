@@ -8,6 +8,7 @@ const createGroupMiddleware = (req, res, next) => {
     req: {
         userId: " ",
         time: " ",
+        date: " ",
         startPoint: " ",
         endPoint: " ",
     }
