@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const pointSchema = new mongoose.Schema({
+    formatAddress: { type: String, required: true },
     type: {
         type: String,
         enum: ['Point'],
@@ -19,6 +20,7 @@ const groupSchema = new mongoose.Schema({
     endPoint: { type: pointSchema, required: true, index: "2dsphere" },
     time: { type: Date, required: true },
     members: [String], // array of userId
+    member_num: { type: Number },
     creator: { type: String, required: true }
 })
 

@@ -13,6 +13,9 @@ const searchGroupMiddleware = (req, res, next) => {
     const request = req.body;
     console.log(request);
     const morning = new Date(request.matchdate);
+    morning.setSeconds(1);
+    morning.setHours(0);
+    morning.setMinutes(0);
     console.log("morning is " + morning);
 
 
@@ -20,6 +23,8 @@ const searchGroupMiddleware = (req, res, next) => {
     midnight.setSeconds(59);
     midnight.setHours(23);
     midnight.setMinutes(59);
+    console.log("midnight is " + midnight);
+
     const endpointAddr = req.body.endpointaddress;
     console.log("endpoint addr is " + endpointAddr);
 
@@ -27,30 +32,32 @@ const searchGroupMiddleware = (req, res, next) => {
             address: endpointAddr
         })
         .then((response) => {
-            console.log("get response from geo search");
-            if (response.status === "OK") {
-                const endpoint = response.location;
+            if (response.data.status) {
+                const endpoint = response.data.location;
+                console.log(endpoint);
 
                 Group.find({
-                    date: { $gt: morning, $lt: midnight },
+                    time: { $gte: morning, $lt: midnight },
                     endPoint: {
                         $near: {
                             $maxDistance: 500,
-                            $geometry: endpoint
+                            //$geometry: endpoint
+                            $geometry: {
+                                type: 'Point',
+                                coordinates: [127.36039, 36.3721427]
+                            }
                         }
                     },
-                    members: {
-                        $size: {
-                            $lt: 4
-                        }
+                    member_num: {
+                        $lt: 4
                     }
-
-
                 }, (err, data) => {
-                    console.log(data);
-                    if (err) throw err;
-                    else {
-                        res.json(data);
+                    if (err) {
+                        throw err;
+                    } else {
+                        console.log(data);
+                        res.json({ data: data });
+                        //res.json({ "data": [{ "_id": { "$oid": "5ffb611d5603ee51e4f4d309" }, "members": ["a"], "groupId": "202101610309917401Ca8y1AvmZrtobOsqFm76CpkK8O1EjfEphfQKs9cb", "startPoint": { "coordinates": [127.36039, 36.3721427], "_id": { "$oid": "5ffb611d5603ee51e4f4d30a" }, "formatAddress": "대한민국 대전광역시 유성구 어은동 대학로 291", "type": "Point" }, "endPoint": { "coordinates": [127.36039, 36.3721427], "_id": { "$oid": "5ffb611d5603ee51e4f4d30b" }, "formatAddress": "대한민국 대전광역시 유성구 어은동 대학로 291", "type": "Point" }, "time": { "$date": "2021-01-30T15:30:00.000Z" }, "member_num": 1, "creator": "a", "__v": 0 }] })
                     }
                 })
 
@@ -60,6 +67,7 @@ const searchGroupMiddleware = (req, res, next) => {
         })
         .catch((err) => {
             console.log(err);
+            console.log("error occur!!!");
             throw err;
         })
 

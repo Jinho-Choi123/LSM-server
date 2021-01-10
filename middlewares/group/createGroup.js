@@ -8,7 +8,6 @@ const createGroupMiddleware = (req, res, next) => {
     req: {
         userId: " ",
         time: " ",
-        date: " ",
         startPoint: " ",
         endPoint: " ",
     }
@@ -25,7 +24,7 @@ const createGroupMiddleware = (req, res, next) => {
     }
     let today = new Date();
     const groupid = today.getFullYear().toString() + today.getMonth().toString() + today.getTime().toString() + makeid(40);
-    const time = req.body.time;
+    const time = new Date(req.body.time);
     const startpoint = req.body.startPoint;
     const endpoint = req.body.endPoint;
     const member = [req.body.userId];
@@ -35,8 +34,9 @@ const createGroupMiddleware = (req, res, next) => {
         groupId: groupid,
         startPoint: startpoint,
         endPoint: endpoint,
-        time: time,
+        time: new Date(time),
         members: member,
+        member_num: 1,
         creator: creator
     })
 
@@ -44,8 +44,6 @@ const createGroupMiddleware = (req, res, next) => {
         roomId: groupid,
         content: []
     })
-
-    group.createIndex()
 
     group.save()
         .then(() => {
