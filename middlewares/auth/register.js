@@ -24,14 +24,14 @@ const registerMiddleware = (req, res, next) => {
                 res.send({ msg: "user ID already exists", success: false });
                 return;
             } else {
-                crypto.pbkdf2(userpassword, (process.env.PASSWORD_HASH_SALT).toString('base64'), 90194, 64, 'sha512', (err, key) => {
+                crypto.pbkdf2(userpassword, (process.env.PASSWORD_HASH_SALT).toString('base64'), 90194, 64, 'sha512', async(err, key) => {
                     if (err) throw err;
                     else {
-                        const user = new User({
+                        const user = await new User({
                             userId: userid,
                             userPassword: key.toString('base64'),
                         })
-                        user.save();
+                        await user.save();
                     }
                 })
 

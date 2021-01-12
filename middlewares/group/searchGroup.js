@@ -8,6 +8,8 @@ const searchGroupMiddleware = (req, res, next) => {
     req: {
         endpointaddress: " ",
         matchdate: " ",
+        endpoint_lat: " ",
+        endpoint_lon: " "
     }
     */
     const request = req.body;
@@ -23,46 +25,35 @@ const searchGroupMiddleware = (req, res, next) => {
 
     const endpointAddr = req.body.endpointaddress;
 
-    axios.post('http://localhost:8080/geo/search', {
-            address: endpointAddr
-        })
-        .then((response) => {
-            if (response.data.status) {
-                const endpoint = response.data.location;
-                const lattitude = endpoint.coordinates[1];
-                const longitude = endpoint.coordinates[0];
+    const lattitude = Number.parseFloat(req.body.endpoint_lat);
+    const longitude = Number.parseFloat(req.body.endpoint_lon);
 
-                Group.find({
-                    time: { $gte: morning, $lt: midnight },
-                    endPoint: {
-                        $near: {
-                            $maxDistance: 300,
-                            //$geometry: endpoint
-                            $geometry: {
-                                type: 'Point',
-                                coordinates: [longitude, lattitude]
-                            }
-                        }
-                    },
-                    member_num: {
-                        $lt: 4,
-                        $gte: 1
-                    }
-                }, (err, data) => {
-                    if (err) {
-                        throw err;
-                    } else {
-                        res.json({ data: data });
-                    }
-                })
-
-            } else {
-                res.status(201).json({});
+    Group.find({
+        time: { $gte: morning, $lt: midnight },
+        endPoint: {
+            $near: {
+                $maxDistance: 500,
+                //$geometry: endpoint
+                $geometry: {
+                    type: 'Point',
+                    coordinates: [longitude, lattitude]
+                }
             }
-        })
-        .catch((err) => {
+        },
+        member_num: {
+            $lt: 4,
+            $gte: 1
+        }
+    }, (err, data) => {
+        console.log(data);
+        if (err) {
+            console.log("hello world");
             throw err;
-        })
+        } else {
+            res.json({ data: data });
+        }
+    })
+
 
 
 

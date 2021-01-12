@@ -4,15 +4,23 @@ const Group = require('../../models/Group');
 const Chat = require('../../models/Chat');
 
 const createGroupMiddleware = (req, res, next) => {
+    console.log(req);
     /*
     req: {
         userId: " ",
         time: " ",
-        startPoint: " ",
-        endPoint: " ",
+        startPoint: {
+            formatAddress:
+            type:
+            lat:
+            lon:
+        }
+        startPoint_lat: " ",
+        startPoint_lon: " "
+        endPoint_lat: " ",
+        endPoint_lon
     }
     */
-
     const makeid = (length) => {
         var result = '';
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -25,8 +33,17 @@ const createGroupMiddleware = (req, res, next) => {
     let today = new Date();
     const groupid = today.getFullYear().toString() + today.getMonth().toString() + today.getTime().toString() + makeid(40);
     const time = new Date(req.body.time);
-    const startpoint = req.body.startPoint;
-    const endpoint = req.body.endPoint;
+
+    const startpoint = {
+        type: "Point",
+        formatAddress: req.body.startPoint.formatAddress,
+        coordinates: [Number.parseFloat(req.body.startPoint.lon), Number.parseFloat(req.body.startPoint.lat)]
+    }
+    const endpoint = {
+        type: "Point",
+        formatAddress: req.body.endPoint.formatAddress,
+        coordinates: [Number.parseFloat(req.body.endPoint.lon), Number.parseFloat(req.body.endPoint.lat)]
+    }
     const member = [req.body.userId];
     const creator = req.body.userId;
 
